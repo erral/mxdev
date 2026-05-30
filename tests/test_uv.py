@@ -352,6 +352,74 @@ managed = true
     assert doc["tool"]["uv"]["sources"]["pkg1"]["path"] == "sources/pkg1/sub/dir"
 
 
+def test_update_pyproject_with_uv_prefixed_package(tmp_path, monkeypatch):
+    """Test that packages named 'uv.*' are correctly added to tool.uv.sources."""
+    monkeypatch.chdir(tmp_path)
+    hook = UvPyprojectUpdater()
+
+    mx_ini = """
+[settings]
+[uv.whatever]
+url = https://example.com/uv.whatever.git
+target = sources
+install-mode = editable
+"""
+    (tmp_path / "mx.ini").write_text(mx_ini.strip())
+    config = Configuration("mx.ini")
+    state = State(config)
+
+    initial_toml = """
+[project]
+name = "test"
+dependencies = []
+
+[tool.uv]
+managed = true
+"""
+    (tmp_path / "pyproject.toml").write_text(initial_toml.strip())
+
+    hook.write(state)
+
+    doc = tomlkit.parse((tmp_path / "pyproject.toml").read_text())
+    assert "uv.whatever" in doc["tool"]["uv"]["sources"]
+    assert doc["tool"]["uv"]["sources"]["uv.whatever"]["path"] == "sources/uv.whatever"
+    assert doc["tool"]["uv"]["sources"]["uv.whatever"]["editable"] is True
+
+
+def test_update_pyproject_with_uvx_prefixed_package(tmp_path, monkeypatch):
+    """Test that packages named 'uvx.*' are correctly added to tool.uv.sources."""
+    monkeypatch.chdir(tmp_path)
+    hook = UvPyprojectUpdater()
+
+    mx_ini = """
+[settings]
+[uvx.package2]
+url = https://example.com/uvx.pkg2.git
+target = sources
+install-mode = fixed
+"""
+    (tmp_path / "mx.ini").write_text(mx_ini.strip())
+    config = Configuration("mx.ini")
+    state = State(config)
+
+    initial_toml = """
+[project]
+name = "test"
+dependencies = []
+
+[tool.uv]
+managed = true
+"""
+    (tmp_path / "pyproject.toml").write_text(initial_toml.strip())
+
+    hook.write(state)
+
+    doc = tomlkit.parse((tmp_path / "pyproject.toml").read_text())
+    assert "uvx.package2" in doc["tool"]["uv"]["sources"]
+    assert doc["tool"]["uv"]["sources"]["uvx.package2"]["path"] == "sources/uvx.package2"
+    assert doc["tool"]["uv"]["sources"]["uvx.package2"]["editable"] is False
+
+
 def test_hook_handles_oserror_on_read(mocker, tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     hook = UvPyprojectUpdater()
