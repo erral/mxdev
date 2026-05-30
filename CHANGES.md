@@ -2,23 +2,9 @@
  
 ## 5.4.0 (unreleased)
 
-<!-- Add future changes here -->
-
-
-## 5.3.0 (2026-05-29)
-
-- Feature: The `uv` hook now also propagates `version-overrides` from `mx.ini` to `[tool.uv] override-dependencies` in `pyproject.toml`. This keeps version pins in sync between mxdev and uv-managed projects.
-  [frapell]
-
-
-## 5.2.0 (2026-05-28)
-
-- Feature: Built-in integration with `uv` through `pyproject.toml`. When `mxdev` is run, it checks if the project has a `pyproject.toml` containing `[tool.uv]` with `managed = true`. If so, mxdev automatically adds checked-out packages to `[tool.uv.sources]`. This allows for seamless use of `uv sync` or `uv run` with local checkouts. `tomlkit` is now an optional dependency (install with `mxdev[uv]`) to preserve `pyproject.toml` formatting during updates.
-  [erral]
-
-## 5.2.0 (unreleased)
-
 - Feature: Added support for `pyproject.toml` as a configuration source. mxdev will now automatically look for `[tool.mxdev]` configuration in `pyproject.toml` if `mx.ini` is missing. Users can also explicitly specify it with `-c pyproject.toml`. [erral]
+
+<!-- Add future changes here -->
 
 ## 5.1.0
 
